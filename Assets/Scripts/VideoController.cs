@@ -7,25 +7,22 @@ using System.Collections;
 /// Applies to any textured objet with a MovieTexture on it
 /// </summary>
 [RequireComponent(typeof(AudioSource))]
-public class VideoController : MonoBehaviour
-{
+public class VideoController : MonoBehaviour {
 
 	public MovieTexture movie;
 	public bool autoPlay;
 	public bool flipVideo;
-	public bool preserveAspectRatio;
+	public bool fillScreen;
 	public Color backgroundColor;
 
 	Camera mainCamera;
 	RawImage rawImage;
 	AudioSource audioSource;
 
-	void Start()
-	{
+	void Start() {
 
 		Cursor.visible = false;
-		if (movie != null)
-		{
+		if (movie != null) {
 			Camera mainCamera = FindObjectOfType<Camera>();
 			mainCamera.backgroundColor = backgroundColor;
 
@@ -39,15 +36,21 @@ public class VideoController : MonoBehaviour
 			rawImage.texture = movie;
 
 			// Fixed width
-			Vector3 videoScale = GetVideoScaleForScreen(new Vector2(movie.width, movie.height), new Vector2(Screen.width, Screen.height));
+			Vector3 videoScale = Vector3.one;
+			if (!fillScreen) {
+				videoScale = GetVideoScaleForScreen(new Vector2(movie.width, movie.height),
+																						new Vector2(Screen.width, Screen.height));
+			}
+			if (flipVideo) {
+				videoScale.y *= -1;
+			}
 			rawImage.rectTransform.localScale = videoScale;
-			
+
 			// Set audio
 			audioSource = GetComponent<AudioSource>();
 			audioSource.clip = movie.audioClip;
 
-			if (autoPlay)
-			{
+			if (autoPlay) {
 				movie.Play();
 				audioSource.Play();
 			}
@@ -66,19 +69,15 @@ public class VideoController : MonoBehaviour
 		return videoScaling;
 	}
 
-	void Update()
-	{
+	void Update() {
 		if (movie == null)
 			return;
 
-		if (Input.GetKeyDown(KeyCode.Space))
-		{
-			if (movie.isPlaying)
-			{
+		if (Input.GetKeyDown(KeyCode.Space)) {
+			if (movie.isPlaying) {
 				movie.Pause();
 				audioSource.Pause();
-			}
-			else {
+			} else {
 				movie.Play();
 				audioSource.Play();
 			}
