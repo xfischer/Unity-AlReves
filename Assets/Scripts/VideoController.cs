@@ -19,7 +19,7 @@ public class VideoController : MonoBehaviour {
 	RawImage rawImage;
 	AudioSource audioSource;
 
-	void Start() {
+	public void Start() {
 
 		Cursor.visible = false;
 		if (movie != null) {
@@ -35,16 +35,8 @@ public class VideoController : MonoBehaviour {
 			rawImage = GetComponentInChildren<RawImage>();
 			rawImage.texture = movie;
 
-			// Fixed width
-			Vector3 videoScale = Vector3.one;
-			if (!fillScreen) {
-				videoScale = GetVideoScaleForScreen(new Vector2(movie.width, movie.height),
-																						new Vector2(Screen.width, Screen.height));
-			}
-			if (flipVideo) {
-				videoScale.y *= -1;
-			}
-			rawImage.rectTransform.localScale = videoScale;
+			// Scale video
+			rawImage.rectTransform.localScale = GetScaleTransform();
 
 			// Set audio
 			audioSource = GetComponent<AudioSource>();
@@ -55,6 +47,21 @@ public class VideoController : MonoBehaviour {
 				audioSource.Play();
 			}
 		}
+	}
+
+	public Vector3 GetScaleTransform() {
+		Vector3 videoScale = Vector3.one;
+		if (!fillScreen) {
+			videoScale = GetVideoScaleForScreen(new Vector2(movie.width, movie.height),
+																					new Vector2(Screen.width, Screen.height));
+		}
+		if (flipVideo) {
+			videoScale.y *= -1;
+		}
+
+		return videoScale;
+
+
 	}
 
 	Vector3 GetVideoScaleForScreen(Vector2 videoSize, Vector2 screenSize) {
