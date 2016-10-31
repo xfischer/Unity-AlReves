@@ -17,6 +17,9 @@ public class SceneSwitchManager : MonoBehaviour {
 	private static SceneSwitchManager sceneSwitchManagerInstance;
 
 	void Awake() {
+
+		InitKeyBindings();
+
 		DontDestroyOnLoad(this);
 
 		if (sceneSwitchManagerInstance == null) {
@@ -25,10 +28,8 @@ public class SceneSwitchManager : MonoBehaviour {
 			DestroyObject(gameObject);
 		}
 	}
-
-
-	// Use this for initialization
-	void Start() {
+	
+	void InitKeyBindings() {
 
 		// Init F1 - F12 mappings
 		functionKeysBySceneIndex = new Dictionary<int, KeyCode>();
@@ -40,30 +41,45 @@ public class SceneSwitchManager : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update() {
-		ListenToSceneSwitchInput();
+
+		HandleInput();
+
 	}
 
-	private void ListenToSceneSwitchInput() {
+	private void HandleInput() {
 
-	
-		if (Input.GetKeyDown(KeyCode.Backspace)) {
-			// Back to main
-			SceneManager.LoadScene(0);
-			uiCanvas.enabled = true;
-		} else if (Input.GetKeyDown(KeyCode.M)) {
-			// Cursor
-			Cursor.visible = !Cursor.visible;
-		} else {
-			// F1 -> F12
-			foreach (KeyValuePair<int, KeyCode> sceneKeyPair in functionKeysBySceneIndex) {
-				if (Input.GetKeyDown(sceneKeyPair.Value)) {
+		if (Input.anyKeyDown)
+		{
+			if (Input.GetKeyDown(KeyCode.Backspace))
+			{
+				// Back to main
+				SceneManager.LoadScene(0);
+				uiCanvas.enabled = true;
+			}
+			else if (Input.GetKeyDown(KeyCode.M))
+			{
+				// Cursor
+				Cursor.visible = !Cursor.visible;
+			}
+			else if (Input.GetKeyDown(KeyCode.Escape))
+			{
+				// Quit
+				Application.Quit();
+			}
+			else {
+				// F1 -> F12
+				foreach (KeyValuePair<int, KeyCode> sceneKeyPair in functionKeysBySceneIndex)
+				{
+					if (Input.GetKeyDown(sceneKeyPair.Value))
+					{
 
-					// Function key pressed. Change scene now
+						// Function key pressed. Change scene now
 
-					uiCanvas.enabled = false;
-					SceneManager.LoadScene(sceneKeyPair.Key);
+						uiCanvas.enabled = false;
+						SceneManager.LoadScene(sceneKeyPair.Key);
 
-					break;
+						break;
+					}
 				}
 			}
 		}
