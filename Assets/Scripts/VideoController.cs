@@ -12,6 +12,8 @@ public class VideoController : MonoBehaviour
 
 	public MovieTexture movie;
 	public bool autoPlay;
+	public bool flipVideo;
+	public bool preserveAspectRatio;
 	public Color backgroundColor;
 
 	Camera mainCamera;
@@ -37,34 +39,9 @@ public class VideoController : MonoBehaviour
 			rawImage.texture = movie;
 
 			// Fixed width
-			int sourceWidth = movie.width;
-			int sourceHeight = movie.height;
-
-			float nPercent = 0;
-			float nPercentW = 0;
-			float nPercentH = 0;
-
-			nPercentW = ((float)Screen.width / (float)sourceWidth);
-			nPercentH = ((float)Screen.height / (float)sourceHeight);
-			if (nPercentH < nPercentW)
-			{
-				nPercentH = 1;
-			}
-			else
-			{
-				nPercentW = 1;
-			}
-
-			int destWidth = (int)(sourceWidth * nPercentW);
-			int destHeight = (int)(sourceHeight * nPercentH);
-
-			rawImage.rectTransform.localScale = new Vector3(nPercentW, nPercentH, 1);
-
-
-
-			print("Movie size" + movie.width + " x " + movie.height + " (ratio = " + movie.width/(float)movie.height);
-			print("Camera ratio" + mainCamera.aspect);
-
+			Vector3 videoScale = GetVideoScaleForScreen(new Vector2(movie.width, movie.height), new Vector2(Screen.width, Screen.height));
+			rawImage.rectTransform.localScale = videoScale;
+			
 			// Set audio
 			audioSource = GetComponent<AudioSource>();
 			audioSource.clip = movie.audioClip;
@@ -75,6 +52,18 @@ public class VideoController : MonoBehaviour
 				audioSource.Play();
 			}
 		}
+	}
+
+	Vector3 GetVideoScaleForScreen(Vector2 videoSize, Vector2 screenSize) {
+		float screenRatio = screenSize.x / screenSize.y;
+		float videoRatio = videoSize.x / videoSize.y;
+		Vector3 videoScaling;
+		if (screenRatio < videoRatio) {
+			videoScaling = new Vector3(1, screenRatio / videoRatio, 1);
+		} else {
+			videoScaling = new Vector3(videoRatio / screenRatio, 1, 1);
+		}
+		return videoScaling;
 	}
 
 	void Update()
