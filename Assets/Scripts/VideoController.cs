@@ -7,28 +7,49 @@ using System.Collections;
 /// Applies to any textured objet with a MovieTexture on it
 /// </summary>
 [RequireComponent(typeof(AudioSource))]
-public class VideoController : MonoBehaviour {
+public class VideoController : MonoBehaviour
+{
 
 	public MovieTexture movie;
-	private AudioSource audioSource;
 
-	void Start() {
+	Camera mainCamera;
+	RawImage rawImage;
+	AudioSource audioSource;
+
+	void Start()
+	{
 
 		Cursor.visible = false;
-		GetComponent<RawImage>().texture = movie;
-		audioSource = GetComponent<AudioSource>();
-		audioSource.clip = movie.audioClip;
+		if (movie != null)
+		{
+			Camera mainCamera = FindObjectOfType<Camera>();
+			Canvas canvasContainer = GetComponent<Canvas>();
+			canvasContainer.renderMode = RenderMode.ScreenSpaceCamera;
+			canvasContainer.worldCamera = mainCamera;
 
-		movie.Play();
-		audioSource.Play();
+			rawImage = GetComponentInChildren<RawImage>();
+			rawImage.texture = movie;
+			audioSource = GetComponent<AudioSource>();
+			audioSource.clip = movie.audioClip;
+
+			movie.Play();
+			audioSource.Play();
+		}
 	}
 
-	void Update() {
-		if (Input.GetKeyDown(KeyCode.Space)) {
-			if (movie.isPlaying) {
+	void Update()
+	{
+		if (movie == null)
+			return;
+
+		if (Input.GetKeyDown(KeyCode.Space))
+		{
+			if (movie.isPlaying)
+			{
 				movie.Pause();
 				audioSource.Pause();
-			} else {
+			}
+			else {
 				movie.Play();
 				audioSource.Play();
 			}
