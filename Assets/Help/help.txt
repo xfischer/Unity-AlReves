@@ -1,0 +1,5 @@
+VideoController :
+Works with VideoPlayerPrefab.
+- Inputs :
+	- MovieTexture
+- Requires an Camera in the scene
