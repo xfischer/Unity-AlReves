@@ -13,6 +13,8 @@ public class VideoController : MonoBehaviour {
 	private AudioSource audioSource;
 
 	void Start() {
+
+		Cursor.visible = false;
 		GetComponent<RawImage>().texture = movie;
 		audioSource = GetComponent<AudioSource>();
 		audioSource.clip = movie.audioClip;

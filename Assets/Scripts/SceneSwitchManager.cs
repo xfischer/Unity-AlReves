@@ -45,11 +45,16 @@ public class SceneSwitchManager : MonoBehaviour {
 
 	private void ListenToSceneSwitchInput() {
 
+	
 		if (Input.GetKeyDown(KeyCode.Backspace)) {
 			// Back to main
 			SceneManager.LoadScene(0);
 			uiCanvas.enabled = true;
+		} else if (Input.GetKeyDown(KeyCode.M)) {
+			// Cursor
+			Cursor.visible = !Cursor.visible;
 		} else {
+			// F1 -> F12
 			foreach (KeyValuePair<int, KeyCode> sceneKeyPair in functionKeysBySceneIndex) {
 				if (Input.GetKeyDown(sceneKeyPair.Value)) {
 
@@ -62,7 +67,5 @@ public class SceneSwitchManager : MonoBehaviour {
 				}
 			}
 		}
-
-
 	}
 }
