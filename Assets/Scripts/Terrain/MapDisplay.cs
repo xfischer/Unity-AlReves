@@ -3,6 +3,9 @@ using System.Collections;
 
 namespace Terrain {
 
+	/// <summary>
+	/// 
+	/// </summary>
 	public class MapDisplay : MonoBehaviour {
 
 		public Renderer textureRender;
