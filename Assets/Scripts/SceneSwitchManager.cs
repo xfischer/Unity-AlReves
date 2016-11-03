@@ -67,6 +67,11 @@ public class SceneSwitchManager : MonoBehaviour {
 				Application.Quit();
 			}
 			else {
+				if (functionKeysBySceneIndex == null)
+				{
+					InitKeyBindings();
+					CustomLogHandler.Logger.Log("SceneSwitch.Update()", "Key bindings not initialized.");
+				}
 				// F1 -> F12
 				foreach (KeyValuePair<int, KeyCode> sceneKeyPair in functionKeysBySceneIndex)
 				{
