@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEditor;
-using Terrain;
 
 [CustomEditor(typeof(MapGenerator))]
 public class MapGeneratorEditor : Editor {
