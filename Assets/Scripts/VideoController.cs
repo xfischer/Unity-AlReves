@@ -7,7 +7,8 @@ using UnityEditor;
 /// Applies to any textured objet with a MovieTexture on it
 /// </summary>
 [RequireComponent(typeof(AudioSource))]
-public class VideoController : MonoBehaviour {
+public class VideoController : MonoBehaviour
+{
 
 	public MovieTexture movie;
 	public bool autoPlay;
@@ -25,60 +26,76 @@ public class VideoController : MonoBehaviour {
 
 	bool isInitialized;
 
-	void Start() {
+	void Start()
+	{
 
-		if (videoPlayerPrefab != null) {
+		if (videoPlayerPrefab != null)
+		{
 
 			vidPlayerInstance = Instantiate<GameObject>(videoPlayerPrefab);
 			vidPlayerInstance.transform.SetParent(this.transform);
 
 			Cursor.visible = false;
-			if (movie != null) {
-				Camera mainCamera = FindObjectOfType<Camera>();
-				mainCamera.backgroundColor = backgroundColor;
+			Camera mainCamera = FindObjectOfType<Camera>();
+			mainCamera.backgroundColor = backgroundColor;
 
-				// Set render camera on canvas
-				Canvas canvasContainer = vidPlayerInstance.GetComponent<Canvas>();
-				canvasContainer.renderMode = RenderMode.ScreenSpaceCamera;
-				canvasContainer.worldCamera = mainCamera;
+			// Set render camera on canvas
+			Canvas canvasContainer = vidPlayerInstance.GetComponent<Canvas>();
+			canvasContainer.renderMode = RenderMode.ScreenSpaceCamera;
+			canvasContainer.worldCamera = mainCamera;
 
-				// Set video
-				rawImage = vidPlayerInstance.GetComponentInChildren<RawImage>();
-				rawImage.texture = movie;
-
-				// Fixed width
-				videoScaleForPreserveAspect = GetVideoScaleForScreen(new Vector2(movie.width, movie.height),
-																							new Vector2(Screen.width, Screen.height));
-				SetVideoScale(videoScaleForPreserveAspect, flipVideo, fillScreen);
-
-
-				// Set audio
-				audioSource = vidPlayerInstance.GetComponent<AudioSource>();
-				audioSource.clip = movie.audioClip;
-				audioSource.volume = volume;
-
-				if (autoPlay) {
-					Play();
-				}
-
-				isInitialized = true;
+			rawImage = vidPlayerInstance.GetComponentInChildren<RawImage>();
+			if (movie == null)
+			{
+				// no movie assigned. Get the default movie from prefab
+				movie = rawImage.texture as MovieTexture;
+				CustomLogHandler.Logger.LogWarning("VideoController", "No movie assigned. Using default movie.");
 			}
+			else
+			{
+				// Set video
+				rawImage.texture = movie;
+			}
+
+			// Fixed width
+			videoScaleForPreserveAspect = GetVideoScaleForScreen(new Vector2(movie.width, movie.height),
+																						new Vector2(Screen.width, Screen.height));
+			SetVideoScale(videoScaleForPreserveAspect, flipVideo, fillScreen);
+
+
+			// Set audio
+			audioSource = vidPlayerInstance.GetComponent<AudioSource>();
+			audioSource.clip = movie.audioClip;
+			audioSource.volume = volume;
+
+			if (autoPlay)
+			{
+				Play();
+			}
+
+			isInitialized = true;
+
 		}
 	}
 
-	void SetVideoScale(Vector3 scaleToFit, bool yFlip, bool bfillScreen) {
+	void SetVideoScale(Vector3 scaleToFit, bool yFlip, bool bfillScreen)
+	{
 
 		Vector3 vidScale;
-		if (bfillScreen == false) {
+		if (bfillScreen == false)
+		{
 			vidScale = new Vector3(scaleToFit.x, scaleToFit.y * (yFlip ? -1f : 1f), scaleToFit.z);
-		} else {
+		}
+		else {
 			vidScale = new Vector3(1, yFlip ? -1f : 1f, 1);
 		}
 		rawImage.rectTransform.localScale = vidScale;
 	}
-	public void UpdateFromEditor() {
+	public void UpdateFromEditor()
+	{
 
-		if (isInitialized) {
+		if (isInitialized)
+		{
 			audioSource.volume = volume;
 			//Camera mainCamera = FindObjectOfType<Camera>();
 			//mainCamera.backgroundColor = backgroundColor;
@@ -98,39 +115,50 @@ public class VideoController : MonoBehaviour {
 		}
 	}
 
-	Vector3 GetVideoScaleForScreen(Vector2 videoSize, Vector2 screenSize) {
+	Vector3 GetVideoScaleForScreen(Vector2 videoSize, Vector2 screenSize)
+	{
 		float screenRatio = screenSize.x / screenSize.y;
 		float videoRatio = videoSize.x / videoSize.y;
 		Vector3 videoScaling;
-		if (screenRatio < videoRatio) {
+		if (screenRatio < videoRatio)
+		{
 			videoScaling = new Vector3(1, screenRatio / videoRatio, 1);
-		} else {
+		}
+		else {
 			videoScaling = new Vector3(videoRatio / screenRatio, 1, 1);
 		}
 		return videoScaling;
 	}
 
-	void Update() {
+	void Update()
+	{
 		if (movie == null)
 			return;
 
-		if (Input.GetKeyDown(KeyCode.Space)) {
-			if (movie.isPlaying) {
+		if (Input.GetKeyDown(KeyCode.Space))
+		{
+			if (movie.isPlaying)
+			{
 				Pause();
-			} else {
+			}
+			else {
 				Play();
 			}
 		}
 	}
 
-	void Play() {
-		if (movie != null && !movie.isPlaying) {
+	void Play()
+	{
+		if (movie != null && !movie.isPlaying)
+		{
 			movie.Play();
 			audioSource.Play();
 		}
 	}
-	void Pause() {
-		if (movie != null && movie.isPlaying) {
+	void Pause()
+	{
+		if (movie != null && movie.isPlaying)
+		{
 			movie.Pause();
 			audioSource.Pause();
 		}

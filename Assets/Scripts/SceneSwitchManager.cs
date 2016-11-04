@@ -53,7 +53,7 @@ public class SceneSwitchManager : MonoBehaviour {
 			if (Input.GetKeyDown(KeyCode.Backspace))
 			{
 				// Back to main
-				SceneManager.LoadScene(0);
+				SwitchToScene(0);
 				uiCanvas.enabled = true;
 			}
 			else if (Input.GetKeyDown(KeyCode.M))
@@ -79,14 +79,23 @@ public class SceneSwitchManager : MonoBehaviour {
 					{
 
 						// Function key pressed. Change scene now
-
 						uiCanvas.enabled = false;
-						SceneManager.LoadScene(sceneKeyPair.Key);
+						SwitchToScene(sceneKeyPair.Key);
+						
 
 						break;
 					}
 				}
 			}
 		}
+	}
+
+	private void SwitchToScene(int index)
+	{
+		SceneManager.LoadScene(index);
+		CustomLogHandler.Logger.Log("SceneSwitch.Update()",  string.Concat("Switch to scene[",
+																																	index,
+																																	"]."));
+
 	}
 }
