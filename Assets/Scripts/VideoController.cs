@@ -57,20 +57,23 @@ public class VideoController : MonoBehaviour
 				rawImage.texture = movie;
 			}
 
-			// Fixed width
-			videoScaleForPreserveAspect = GetVideoScaleForScreen(new Vector2(movie.width, movie.height),
-																						new Vector2(Screen.width, Screen.height));
-			SetVideoScale(videoScaleForPreserveAspect, flipVideo, fillScreen);
-
-
-			// Set audio
-			audioSource = vidPlayerInstance.GetComponent<AudioSource>();
-			audioSource.clip = movie.audioClip;
-			audioSource.volume = volume;
-
-			if (autoPlay)
+			if (movie != null)
 			{
-				Play();
+				// Fixed width
+				videoScaleForPreserveAspect = GetVideoScaleForScreen(new Vector2(movie.width, movie.height),
+																							new Vector2(Screen.width, Screen.height));
+				SetVideoScale(videoScaleForPreserveAspect, flipVideo, fillScreen);
+
+
+				// Set audio
+				audioSource = vidPlayerInstance.GetComponent<AudioSource>();
+				audioSource.clip = movie.audioClip;
+				audioSource.volume = volume;
+
+				if (autoPlay)
+				{
+					Play();
+				}
 			}
 
 			isInitialized = true;
