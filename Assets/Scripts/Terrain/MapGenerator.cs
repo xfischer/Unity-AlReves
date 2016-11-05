@@ -7,7 +7,22 @@ public class MapGenerator : MonoBehaviour {
 
 	public NoiseType noiseType;
 
-	const int mapChunkSize = 241;
+
+	static MapGenerator instance;
+	public static int mapChunkSize
+	{
+		get {
+			if (instance == null) {
+				instance = FindObjectOfType<MapGenerator>();
+			}
+
+			if (instance.useFlatShading) {
+				return 95;
+			} else {
+				return 120;
+			}
+		}
+	}
 	[Range(0, 6)]
 	public int levelOfDetail;
 	public float noiseScale;
@@ -31,12 +46,17 @@ public class MapGenerator : MonoBehaviour {
 
 	public bool autoUpdate;
 
+	public bool useFlatShading;
+
+	[Range(0, 1)]
+	public float lineWidthFactor;
+
 	public TerrainType[] regions;
 
 	public void GenerateMap() {
 		float[,] noiseMap = Noise.GenerateNoiseMap(noiseType, mapChunkSize, mapChunkSize, seed, noiseScale, octaves, persistance, lacunarity, offset, noiseFactorCurve);
 
-		Color[] colourMap = GenerateColourMap(noiseMap);
+		Color[] colourMap = GenerateColourMap(noiseMap, noiseType);
 
 		MapDisplay display = FindObjectOfType<MapDisplay>();
 		if (drawMode == DrawMode.NoiseMap) {
@@ -47,22 +67,31 @@ public class MapGenerator : MonoBehaviour {
 			if (noiseType == NoiseType.Terrain) {
 				display.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplier, meshHeightCurve, levelOfDetail), TextureGenerator.TextureFromColourMap(colourMap, mapChunkSize, mapChunkSize));
 			} else if (noiseType == NoiseType.Vasarely) {
-				display.DrawMesh(MeshGenerator.GenerateVasarelyLineMesh(noiseMap, meshHeightMultiplier, meshHeightCurve, levelOfDetail), TextureGenerator.TextureFromColourMap(colourMap, mapChunkSize, mapChunkSize));
+				//display.DrawMesh(MeshGenerator.GenerateVasarelyLineMesh(noiseMap, meshHeightMultiplier, meshHeightCurve, levelOfDetail), TextureGenerator.TextureFromColourMap(colourMap, mapChunkSize, mapChunkSize));
+				display.DrawMesh(MeshGenerator.GenerateVasarelyBillboardLineMesh(noiseMap, meshHeightMultiplier, meshHeightCurve, levelOfDetail, lineWidthFactor, useFlatShading), TextureGenerator.TextureFromColourMap(colourMap, mapChunkSize, mapChunkSize));
 			}
 		}
 	}
 
-	private Color[] GenerateColourMap(float[,] noiseMap) {
+	private Color[] GenerateColourMap(float[,] noiseMap, NoiseType _noiseType) {
 
 		Color[] colourMap = new Color[mapChunkSize * mapChunkSize];
-		for (int y = 0; y < mapChunkSize; y++) {
-			for (int x = 0; x < mapChunkSize; x++) {
-				float currentHeight = noiseMap[x, y];
-				for (int i = 0; i < regions.Length; i++) {
-					if (currentHeight <= regions[i].height) {
-						colourMap[y * mapChunkSize + x] = regions[i].colour;
-						break;
+		if (_noiseType == NoiseType.Terrain) {
+			for (int y = 0; y < mapChunkSize; y++) {
+				for (int x = 0; x < mapChunkSize; x++) {
+					float currentHeight = noiseMap[x, y];
+					for (int i = 0; i < regions.Length; i++) {
+						if (currentHeight <= regions[i].height) {
+							colourMap[y * mapChunkSize + x] = regions[i].colour;
+							break;
+						}
 					}
+				}
+			}
+		} else if (_noiseType == NoiseType.Vasarely) {
+			for (int y = 0; y < mapChunkSize; y++) {
+				for (int x = 0; x < mapChunkSize; x++) {
+					colourMap[y * mapChunkSize + x] = new Color((x + y) / 2f / (float)mapChunkSize, x / (float)mapChunkSize, y / (float)mapChunkSize);
 				}
 			}
 		}
