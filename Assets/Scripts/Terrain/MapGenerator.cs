@@ -12,6 +12,8 @@ public class MapGenerator : MonoBehaviour {
 	public int levelOfDetail;
 	public float noiseScale;
 
+
+	[Range(0, 8)]
 	public int octaves;
 	[Range(0, 1)]
 	public float persistance;
@@ -25,13 +27,14 @@ public class MapGenerator : MonoBehaviour {
 	public float meshHeightMultiplier;
 	public AnimationCurve meshHeightCurve;
 
+	public AnimationCurve noiseFactorCurve;
+
 	public bool autoUpdate;
 
 	public TerrainType[] regions;
 
 	public void GenerateMap() {
-		float[,] noiseMap = Noise.GenerateNoiseMap(noiseType, mapChunkSize, mapChunkSize, seed, noiseScale, octaves, persistance, lacunarity, offset);
-
+		float[,] noiseMap = Noise.GenerateNoiseMap(noiseType, mapChunkSize, mapChunkSize, seed, noiseScale, octaves, persistance, lacunarity, offset, noiseFactorCurve);
 
 		Color[] colourMap = GenerateColourMap(noiseType, noiseMap);
 
@@ -72,6 +75,8 @@ public class MapGenerator : MonoBehaviour {
 
 					if (currentHeight < 0) {
 						colourMap[y * mapChunkSize + x] = Color.Lerp(Color.white, Color.clear, -currentHeight);
+					} else {
+						colourMap[y * mapChunkSize + x] = Color.white;
 					}
 				}
 			}
