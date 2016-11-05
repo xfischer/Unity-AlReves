@@ -36,7 +36,7 @@ public class MapGenerator : MonoBehaviour {
 	public void GenerateMap() {
 		float[,] noiseMap = Noise.GenerateNoiseMap(noiseType, mapChunkSize, mapChunkSize, seed, noiseScale, octaves, persistance, lacunarity, offset, noiseFactorCurve);
 
-		Color[] colourMap = GenerateColourMap(noiseType, noiseMap);
+		Color[] colourMap = GenerateColourMap(noiseMap);
 
 		MapDisplay display = FindObjectOfType<MapDisplay>();
 		if (drawMode == DrawMode.NoiseMap) {
@@ -52,36 +52,20 @@ public class MapGenerator : MonoBehaviour {
 		}
 	}
 
-	private Color[] GenerateColourMap(NoiseType _noiseType, float[,] noiseMap) {
+	private Color[] GenerateColourMap(float[,] noiseMap) {
 
 		Color[] colourMap = new Color[mapChunkSize * mapChunkSize];
-
-		if (_noiseType == NoiseType.Terrain) {
-			for (int y = 0; y < mapChunkSize; y++) {
-				for (int x = 0; x < mapChunkSize; x++) {
-					float currentHeight = noiseMap[x, y];
-					for (int i = 0; i < regions.Length; i++) {
-						if (currentHeight <= regions[i].height) {
-							colourMap[y * mapChunkSize + x] = regions[i].colour;
-							break;
-						}
-					}
-				}
-			}
-		} else if (_noiseType == NoiseType.Vasarely) {
-			for (int y = 0; y < mapChunkSize; y++) {
-				for (int x = 0; x < mapChunkSize; x++) {
-					float currentHeight = noiseMap[x, y];
-
-					if (currentHeight < 0) {
-						colourMap[y * mapChunkSize + x] = Color.Lerp(Color.white, Color.clear, -currentHeight);
-					} else {
-						colourMap[y * mapChunkSize + x] = Color.white;
+		for (int y = 0; y < mapChunkSize; y++) {
+			for (int x = 0; x < mapChunkSize; x++) {
+				float currentHeight = noiseMap[x, y];
+				for (int i = 0; i < regions.Length; i++) {
+					if (currentHeight <= regions[i].height) {
+						colourMap[y * mapChunkSize + x] = regions[i].colour;
+						break;
 					}
 				}
 			}
 		}
-
 
 		return colourMap;
 	}
