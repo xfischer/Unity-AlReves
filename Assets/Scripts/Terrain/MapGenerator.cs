@@ -19,7 +19,7 @@ public class MapGenerator : MonoBehaviour {
 			if (instance.useFlatShading) {
 				return 95;
 			} else {
-				return 120;
+				return 239;
 			}
 		}
 	}
@@ -64,12 +64,7 @@ public class MapGenerator : MonoBehaviour {
 		} else if (drawMode == DrawMode.ColourMap) {
 			display.DrawTexture(TextureGenerator.TextureFromColourMap(colourMap, mapChunkSize, mapChunkSize));
 		} else if (drawMode == DrawMode.Mesh) {
-			if (noiseType == NoiseType.Terrain) {
-				display.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplier, meshHeightCurve, levelOfDetail), TextureGenerator.TextureFromColourMap(colourMap, mapChunkSize, mapChunkSize));
-			} else if (noiseType == NoiseType.Vasarely) {
-				//display.DrawMesh(MeshGenerator.GenerateVasarelyLineMesh(noiseMap, meshHeightMultiplier, meshHeightCurve, levelOfDetail), TextureGenerator.TextureFromColourMap(colourMap, mapChunkSize, mapChunkSize));
-				display.DrawMesh(MeshGenerator.GenerateVasarelyBillboardLineMesh(noiseMap, meshHeightMultiplier, meshHeightCurve, levelOfDetail, lineWidthFactor, useFlatShading), TextureGenerator.TextureFromColourMap(colourMap, mapChunkSize, mapChunkSize));
-			}
+			display.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplier, meshHeightCurve, levelOfDetail, useFlatShading), TextureGenerator.TextureFromColourMap(colourMap, mapChunkSize, mapChunkSize));
 		}
 	}
 
@@ -91,7 +86,14 @@ public class MapGenerator : MonoBehaviour {
 		} else if (_noiseType == NoiseType.Vasarely) {
 			for (int y = 0; y < mapChunkSize; y++) {
 				for (int x = 0; x < mapChunkSize; x++) {
-					colourMap[y * mapChunkSize + x] = new Color((x + y) / 2f / (float)mapChunkSize, x / (float)mapChunkSize, y / (float)mapChunkSize);
+
+					if (y % 3 == 0)
+					{
+						colourMap[y * mapChunkSize + x] = Color.white;
+					} else
+					{
+						colourMap[y * mapChunkSize + x] = Color.black;
+					}
 				}
 			}
 		}
