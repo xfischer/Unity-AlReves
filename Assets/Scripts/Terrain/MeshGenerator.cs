@@ -28,24 +28,14 @@ public static class MeshGenerator {
 			}
 		}
 
-		int i = 0;
 		for (int y = 0; y < meshSize; y += meshSimplificationIncrement) {
-			
 			for (int x = 0; x < meshSize; x += meshSimplificationIncrement) {
 				int vertexIndex = vertexIndicesMap[x, y];
-
-				float yLine = y;
-				if (i % 2 == 0) {
-					yLine = Mathf.Lerp(y, y + meshSimplificationIncrement, lineFactor);
-				}
-				//(i % 2 == 0) ? y + Mathf.Lerp(y, y + meshSimplificationIncrement, lineFactor) : y;
-
-				Vector2 percentVertex = new Vector2((x - meshSimplificationIncrement) / (float)meshSize, (yLine - meshSimplificationIncrement) / (float)meshSize);
+				
 				float height = heightCurve.Evaluate(heightMap[x, y]) * heightMultiplier;
-				Vector3 vertexPosition = new Vector3(topLeftX + percentVertex.x * meshSizeUnsimplified, height, topLeftZ - percentVertex.y * meshSizeUnsimplified);
-
-				Vector2 percentUV = new Vector2((x - meshSimplificationIncrement) / (float)meshSize, (y - meshSimplificationIncrement) / (float)meshSize);
-				meshData.AddVertex(vertexPosition, percentUV, vertexIndex);
+				Vector2 percent = new Vector2((x - meshSimplificationIncrement) / (float)meshSize, (y - meshSimplificationIncrement) / (float)meshSize);
+				Vector3 vertexPosition = new Vector3(topLeftX + percent.x * meshSizeUnsimplified, height, topLeftZ - percent.y * meshSizeUnsimplified);
+				meshData.AddVertex(vertexPosition, percent, vertexIndex);
 
 				if (x < meshSize - 1 && y < meshSize - 1) {
 					int a = vertexIndicesMap[x, y];
@@ -58,7 +48,6 @@ public static class MeshGenerator {
 
 				vertexIndex++;
 			}
-			i++;
 		}
 
 		meshData.ProcessMesh();
