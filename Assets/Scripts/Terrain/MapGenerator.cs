@@ -48,15 +48,15 @@ public class MapGenerator : MonoBehaviour {
 
 	public bool useFlatShading;
 
-	[Range(0, 1)]
-	public float lineWidthFactor;
+	[Range(1, 10)]
+	public int lineSpacing;
 
 	public TerrainType[] regions;
 
 	public void GenerateMap() {
 		float[,] noiseMap = Noise.GenerateNoiseMap(noiseType, mapChunkSize, mapChunkSize, seed, noiseScale, octaves, persistance, lacunarity, offset, noiseFactorCurve);
 
-		Color[] colourMap = GenerateColourMap(noiseMap, noiseType);
+		Color[] colourMap = GenerateColourMap(noiseMap, noiseType, lineSpacing);
 
 		MapDisplay display = FindObjectOfType<MapDisplay>();
 		if (drawMode == DrawMode.NoiseMap) {
@@ -64,11 +64,11 @@ public class MapGenerator : MonoBehaviour {
 		} else if (drawMode == DrawMode.ColourMap) {
 			display.DrawTexture(TextureGenerator.TextureFromColourMap(colourMap, mapChunkSize, mapChunkSize));
 		} else if (drawMode == DrawMode.Mesh) {
-			display.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplier, meshHeightCurve, levelOfDetail, useFlatShading, lineWidthFactor), TextureGenerator.TextureFromColourMap(colourMap, mapChunkSize, mapChunkSize));
+			display.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplier, meshHeightCurve, levelOfDetail, useFlatShading), TextureGenerator.TextureFromColourMap(colourMap, mapChunkSize, mapChunkSize));
 		}
 	}
 
-	private Color[] GenerateColourMap(float[,] noiseMap, NoiseType _noiseType) {
+	private Color[] GenerateColourMap(float[,] noiseMap, NoiseType _noiseType, int lineSpacing) {
 
 		Color[] colourMap = new Color[mapChunkSize * mapChunkSize];
 		if (_noiseType == NoiseType.Terrain) {
@@ -87,7 +87,7 @@ public class MapGenerator : MonoBehaviour {
 			for (int y = 0; y < mapChunkSize; y++) {
 				for (int x = 0; x < mapChunkSize; x++) {
 
-					if (y % 3 == 0)
+					if (y % lineSpacing == 0)
 					{
 						colourMap[y * mapChunkSize + x] = Color.white;
 					} else
@@ -142,6 +142,9 @@ public class MapGenerator : MonoBehaviour {
 		}
 		if (octaves < 0) {
 			octaves = 0;
+		}
+		if (lineSpacing <=0) {
+			lineSpacing = 1;
 		}
 	}
 }
