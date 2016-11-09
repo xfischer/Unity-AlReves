@@ -71,7 +71,8 @@ public static class Noise {
 		return noiseMap;
 	}
 
-	private static float[,] GenerateVasarelyNoiseMap(int mapWidth, int mapHeight, int seed, float scale, int octaves, float persistance, float lacunarity, Vector2 offset, AnimationCurve noiseFactorCurve) {
+	private static float[,] GenerateVasarelyNoiseMap(int mapWidth, int mapHeight, int seed, float scale, int octaves, float persistance, float lacunarity, Vector2 offset, AnimationCurve _noiseFactorCurve) {
+		AnimationCurve noiseFactorCurve = new AnimationCurve(_noiseFactorCurve.keys);
 
 		float[,] noiseMap = new float[mapWidth, mapHeight];
 
